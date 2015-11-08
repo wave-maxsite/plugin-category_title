@@ -11,7 +11,11 @@ function category_title_autoload($args = array())
 {
 	mso_create_allow('category_title_edit', t('Доступ к настройкам «Category title»', __FILE__));
 	mso_hook_add( 'admin_init', 'category_title_admin_init'); # хук на админку
-	if ( mso_segment(1) == 'category') mso_hook_add( 'head_meta', 'category_title' );
+	if ( mso_segment(1) == 'category')
+	{
+		mso_hook_add( 'head_meta', 'category_title' );
+		mso_hook_add('init', 'category_title_page_init');
+	}
 	return $args;
 }
 
@@ -142,25 +146,12 @@ function category_title_uninstall($args = array())
 
 function category_title($args = array())
 {
-	$CI = &get_instance();
-	$CI->db->select('category_id');
-	$CI->db->where('category_slug', mso_segment(2));
-	$CI->db->limit('1');
-	$query = $CI->db->get('category');
-	if ($query->num_rows() > 0)
-		$query = $query->row('category_id');
-	else
-		$query = 0;
-	//pr($query);
-	require_once(getinfo('common_dir') . 'meta.php');
-	$m = mso_get_meta('category_title', 'category', $query);
-	//pr($m);
-	if (!$m) $m = ' | | '; else $m = $m[0]['meta_value'];
-	//pr($m);
-	$m = explode('|', $m);
-	$meta['ct_title'] = trim($m[0]);
-	$meta['ct_keywords'] = trim($m[1]);
-	$meta['ct_description'] = trim($m[2]);
+	$meta['ct_title'] = CategoryTitle::getInstance()->title;
+	$meta['ct_keywords'] = CategoryTitle::getInstance()->keywords;
+	$meta['ct_description'] = CategoryTitle::getInstance()->description;
+	
+	// шаблон категории
+	mso_set_val('category_temlate', CategoryTitle::getInstance()->template);
 
 	$meta['ct_description'] = str_replace("_NR_", "\n", $meta['ct_description']);
 
@@ -181,5 +172,10 @@ function category_title($args = array())
 	if ($args['info'] == 'keywords')    return $meta['ct_keywords'];
 	if ($args['info'] == 'description') return $meta['ct_description'];
 	return '';
+}
+
+function category_title_page_init()
+{
+	require_once(getinfo('plugins_dir').'category_title/class_cat.php');
 }
 

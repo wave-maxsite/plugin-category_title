@@ -40,12 +40,13 @@
 		foreach ($query->result_array() as $key => $category)
 		{
 			$m = mso_get_meta('category_title', 'category', $category['category_id']);
-			if (!$m) $m = ' | | '; else $m = $m[0]['meta_value'];;
+			if (!$m) $m = ' | | | '; else $m = $m[0]['meta_value'];;
 			$m = explode('|', $m);
 			$meta['ct_title'] = trim($m[0]);
 			$meta['ct_keywords'] = trim($m[1]);
 			$meta['ct_description'] = trim($m[2]);
 			$meta['ct_description'] = str_replace("_NR_", "\n", $meta['ct_description']);
+			$meta['ct_template'] = trim($m[3]);
 			$all_meta[$category['category_id']] = $meta;
 			$all_categories[$category['category_id']] = $category;
 		}
@@ -61,10 +62,12 @@
 			$all_meta[$key]['ct_title'] = $post['f_category_title'][$key];
 			$all_meta[$key]['ct_keywords'] = $post['f_category_keywords'][$key];
 			$all_meta[$key]['ct_description'] = $post['f_category_description'][$key];
-			if (trim($post['f_category_title'][$key]) or trim($post['f_category_keywords'][$key]) or trim($post['f_category_description'][$key]))
+			$all_meta[$key]['ct_template'] = $post['f_category_template'][$key];
+			
+			if (trim($post['f_category_title'][$key]) or trim($post['f_category_keywords'][$key]) or trim($post['f_category_description'][$key]) or trim($post['f_category_template'][$key]))
 			{
 				$post['f_category_description'][$key] = str_replace("\n", "_NR_", $post['f_category_description'][$key]);
-				mso_add_meta('category_title', $key, 'category', $post['f_category_title'][$key] . '|' . $post['f_category_keywords'][$key] . '|' .$post['f_category_description'][$key]);
+				mso_add_meta('category_title', $key, 'category', $post['f_category_title'][$key] . '|' . $post['f_category_keywords'][$key] . '|' .$post['f_category_description'][$key] . '|' .$post['f_category_template'][$key]);
 			}
 			else
 			{
@@ -95,6 +98,10 @@
 		$CI->table->add_row(
 							'Keywords',
 							'<input type="text" name="f_category_keywords['.$category['category_id'].']" value="'.$all_meta[$key]['ct_keywords'].'">'
+							);
+		$CI->table->add_row(
+							'Template',
+							'<input type="text" name="f_category_template['.$category['category_id'].']" value="'.$all_meta[$key]['ct_template'].'">'
 							);
 	}
 	$form .= $CI->table->generate();

@@ -3,10 +3,10 @@
 $info = array(
 	'name' => 'Category title',
 	'description' => 'Позволяет задавать рубрикам keywords, title и description',
-	'version' => '1.1',
+	'version' => '1.2',
 	'author' => 'Wave',
-	'plugin_url' => 'http://wave.fantregata.com/page/category-title',
-	'author_url' => 'http://wave.fantregata.com/',
+	'plugin_url' => 'https://github.com/wave-maxsite/plugin-category_title',
+	'author_url' => 'https://wave-maxsite.github.io/',
 	'group' => 'template'
 );
 
